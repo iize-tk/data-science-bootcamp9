@@ -1,0 +1,66 @@
+## transform nycflight13 
+
+library(nycflights13)
+library(tidyverse)
+
+## Ask 5 questions about this dataset
+
+data("flights")
+view(flights)
+data("airlines")
+view(airlines)
+
+
+## Q1 What were the top 10 airplane routes that traveled frequently in 2013?
+  flights %>%
+    group_by(origin,dest) %>%
+    summarize(n = n()) %>%
+    arrange(desc(n)) %>%
+    head(10)
+  
+## Q2 What were airlines' top 10 bad performances in 2013? (measure by percent delay flight)
+flight_delay <-  flights %>% 
+    group_by(carrier) %>%
+    summarize(count_flight = n())
+  
+  flights %>% 
+    filter(arr_delay > 0, dep_delay >0) %>%
+    group_by(carrier) %>%
+    summarize(count_delay = n(),avg_dep_delay = mean(dep_delay), avg_arr_delay = mean(arr_delay), ) %>%
+    inner_join(flight_delay, by = "carrier") %>%
+    mutate(avg_delay_time = avg_dep_delay + avg_arr_delay ,percent_delay = (count_delay/count_flight)*100) %>%
+    arrange(desc(percent_delay )) %>%
+    inner_join(airlines, by = "carrier") %>%
+    select(name, percent_delay, count_delay, count_flight, avg_dep_delay, avg_arr_delay) %>% 
+    head(10)
+    
+## Q3 What were the months that airplanes traveled frequently in 2013?
+  flights %>%
+    group_by(month) %>%
+    summarize(n = n()) %>%
+    arrange(desc(n)) %>%
+    head(10)
+
+## Q4 What was the most traveled destination for the Newark Liberty International Airport in 2013
+  data("airports")
+  view(airports)
+  
+  flights %>%
+    filter(origin == "EWR") %>%
+    group_by(dest) %>%
+    summarize(n = n()) %>%
+    arrange(desc(n)) %>%
+    inner_join(airports, by = c( "dest" = "faa")) %>%
+    select( airport = name, n)
+
+## Q5 What is the airline that has the most averange speed?  
+  flights %>%
+    select(carrier, flight, distance, hour, minute) %>%
+    mutate(conver_m_to_h = minute/60, hour_minute = hour + conver_m_to_h, avg_speed_flight = distance/hour_minute) %>%
+    group_by(carrier) %>%
+    summarize(avg_speed = mean(avg_speed_flight)) %>%
+    arrange(desc(avg_speed)) %>%
+    inner_join(airlines, by = "carrier") %>%
+    select(name, avg_speed) %>%
+    head(10)
+    
