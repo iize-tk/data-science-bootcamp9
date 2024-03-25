@@ -1,0 +1,76 @@
+##judging
+judge <- function(hu,bo){
+          if(hu == "rock"){
+              if (bo == "rock"){
+                  return("draw")
+              } else if (bo == "paper"){
+                  return("lose")
+               }else if (bo == "scissor"){
+                  return("win")
+               }
+        }else if(hu == "paper"){
+              if (bo == "rock"){
+                 return("win")
+              } else if (bo == "paper"){
+                  return("draw")
+               }else if (bo == "scissor"){
+                  return("lose")
+             }
+        }else if(hu == "scissor"){
+              if (bo == "rock"){
+                  return("lose")
+              } else if (bo == "paper"){
+                 return("win")
+               }else if (bo == "scissor"){
+                  return("draw")
+             }
+        }
+}
+RPS <- function(){
+  options <- ("1 : rock, 2 : paper, 3 : scissor, 4 : leaving")
+  print(options)
+  print("type 1, 2, 3, or 4")
+  ## setting
+  human_wins <-0
+  bot_wins <- 0
+  playing_times <- 0
+ ## function
+  while (TRUE) {
+      flush.console()
+      ## input
+      human_choose <- as.numeric(readline("What's you choose:"))
+      if (human_choose == 4) {
+      break
+      }
+      else if( human_choose == 1 | human_choose == 2 | human_choose ==  3 ){
+          hands = c("rock","paper","scissor")
+          human_hand = hands[human_choose]
+          bot_hand = sample(hands,1)
+          print(paste("your hand :",human_hand))
+          print(paste("bot hand :",bot_hand))
+
+          result <- judge(hu = human_hand, bo = bot_hand )
+          if (result == "win"){
+              human_wins <-human_wins +1
+              playing_times <-  playing_times +1
+              print("Win!")
+          } else if ( result == "draw"){
+              playing_times <-  playing_times +1
+              print("Draw!")
+          } else if  (result == "lose"){
+              bot_wins <- bot_wins +1
+              playing_times <-  playing_times +1
+              print("Lose!")
+          }
+          print(paste("your score :",human_wins,"; bot score :", bot_wins))
+  }else {
+            print("wrong number")
+            break
+  }
+}
+ print("**************Overall Result**************")
+ print(paste("Play Times : ", playing_times,
+        " Your Score : ", human_wins,
+        " Bot Score :", bot_wins) )
+
+}
